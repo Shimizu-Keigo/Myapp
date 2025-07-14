@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イベント詳細</title>
+</head>
+<body>
+    <h1><%= event.title %></h1>
+    <h2>候補日期間: <%= event.startDate.toLocaleDateString() %>〜<%= event.endDate.toLocaleDateString() %></h2>
+    <section>
+        <h3>イベントの更新</h3>
+        <div>
+            <form action="/events/<%= event._id %>?_method=PUT" method="post">
+                <div>
+                    <label for="title">タイトル</label>
+                    <input type="text" name="event[title]" id="title" value="<%= event.title %>">
+                </div>
+                <div>
+                    <label for="startDate">候補期間開始日</label>
+                    <input type="date" name="event[startDate]" id="startDate" value="<%= event.startDate.toISOString().split('T')[0] %>">
+                    <label for="endDate">候補期間終了日</label>
+                    <input type="date" name="event[endDate]" id="endDate" value="<%= event.endDate.toISOString().split('T')[0] %>">
+                </div>
+                <button type="submit">更新する</button>
+            </form>
+        </div> 
+    </section>
+    <form action="/events/<%= event._id %>?_method=delete" method="post">
+        <button type="submit">イベントを削除する</button>
+    </form>
+    <a href="/events">戻る</a>
+</body>
+</html>

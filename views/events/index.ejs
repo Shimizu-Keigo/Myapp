@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イベント管理画面</title>
+</head>
+<body>
+    <section>
+        <h1>イベントの新規作成</h1>
+        <div>
+            <form action="/events" method="post">
+                <div>
+                    <label for="title">タイトル</label>
+                    <input type="text" name="event[title]" id="title">
+                </div>
+                <div>
+                    <label for="startDate">候補期間開始日</label>
+                    <input type="date" name="event[startDate]" id="startDate">
+                    <label for="endDate">候補期間終了日</label>
+                    <input type="date" name="event[endDate]" id="endDate">
+                </div>
+                <button type="submit">登録する</button>
+            </form>
+        </div> 
+    </section>
+
+    <h1>イベントを管理</h1>
+    <ul>
+        <% for(let event of events) { %>
+            <li><a href="/events/<%= event._id %>"><h2>タイトル:<%= event.title %> </h2><p>候補日:<%= event.startDate.toLocaleDateString() %>〜<%= event.endDate.toLocaleDateString() %></p></a></li>
+        <% } %>
+    </ul>
+</body>
+</html>
