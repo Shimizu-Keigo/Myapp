@@ -14,7 +14,7 @@ router.get("/:id", isLoggedIn,  async (req, res) => {  //イベントの詳細�
     const event = await Event.findById(req.params.id).populate({
         path: 'members',
         populate: {
-            path: 'name', // members配列の中の "name" フィールドを対象にする
+            path: 'user', // members配列の中の "name" フィールドを対象にする
             model: 'User'  // Userモデルから情報を取得
         }
     });
@@ -47,7 +47,7 @@ router.post("/", isLoggedIn, async (req, res) => { //新しいイベントの追
     event.author = req.user._id;
     const userId = req.user._id;
     event.members.push({
-        name: req.user._id,
+        user: req.user._id,
         availableDates: [] 
     });
     await event.save();
