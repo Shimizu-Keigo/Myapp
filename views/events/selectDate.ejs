@@ -1,0 +1,38 @@
+<% layout("layout/boilerplate")%>
+    <h1>自分の可能な日を選択してください!</h1>
+    <form action="/events/<%= event._id %>?_method=patch" method="post" class=" container select-date">
+        <div>
+            <label>参加可能な日付を選択してください</label>
+            <div>
+                <% 
+                    // 候補期間の日付をループで処理
+                    const start = new Date(event.startDate);
+                    const end = new Date(event.endDate);
+                    let loop = new Date(start);
+                    while(loop <= end){
+                %>
+                    <div>
+                        <input 
+                            id="date-<%= loop.toISOString().split('T')[0] %>" 
+                            name="availableDates" 
+                            type="checkbox" 
+                            value="<%= loop.toISOString().split('T')[0] %>">
+                        <label for="date-<%= loop.toISOString().split('T')[0] %>">
+                            <%= loop.toLocaleDateString('ja-JP', { month: 'long', day: 'numeric', weekday: 'short' }) %>
+                        </label>
+                    </div>
+                <%
+                    // 次の日に進める
+                    loop.setDate(loop.getDate() + 1);
+                    } 
+                %>
+            </div>
+        </div>
+
+        <div>
+            <button type="submit" class="btn btn-primary">この内容で登録する</button>
+        </div>
+    </form>
+    <p>
+        <a href="/events/<%= event._id %>" class="btn btn-secondary">戻る</a>
+    </p>

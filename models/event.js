@@ -1,10 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const { nanoid } = require('nanoid');
 
-const daysInMonth = {
-    1: 31, 2: 29, 3: 31, 4: 30, 5: 31, 6: 30,
-    7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31
-};
 
 const eventSchema = new mongoose.Schema({
     title: {
@@ -18,8 +15,32 @@ const eventSchema = new mongoose.Schema({
     endDate: {
         type: Date,
         required: true
-    }
+    },
+    eventCode: {
+        type: String,
+        unipue: true
+    },
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    members: [
+        {
+            name: {
+                type: Schema.Types.ObjectId,
+                ref: "User"
+            },
+            availableDates: [Date]
+        }
+    ]
 });
+
+eventSchema.pre('save', function(next) {
+    if (this.isNew && !this.eventCode) {
+      this.eventCode = nanoid(8); 
+    }
+    next(); 
+  });
 
 const Event = mongoose.model("Event", eventSchema);
 

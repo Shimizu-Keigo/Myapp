@@ -1,35 +1,93 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>イベント管理画面</title>
-</head>
-<body>
-    <section>
-        <h1>イベントの新規作成</h1>
+<% layout("layout/boilerplate")%>
+    <div class="container text-center">
         <div>
-            <form action="/events" method="post">
-                <div>
-                    <label for="title">タイトル</label>
-                    <input type="text" name="event[title]" id="title">
-                </div>
-                <div>
-                    <label for="startDate">候補期間開始日</label>
-                    <input type="date" name="event[startDate]" id="startDate">
-                    <label for="endDate">候補期間終了日</label>
-                    <input type="date" name="event[endDate]" id="endDate">
-                </div>
-                <button type="submit">登録する</button>
-            </form>
+            <h1>イベントの新規作成</h1>
+            <div class="d-grid">
+                <button class="btn btn-primary btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#newEventModal">新しく作る</button>
+            </div>
         </div> 
-    </section>
+    </div>
+    <div class="modal fade" id="newEventModal" tabindex="-1" aria-labelledby="newEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="/events" method="POST">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="newEventModalLabel">イベントの新規作成</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- フォームの中身はここに配置します -->
+                        <div class="mb-3">
+                            <label for="title" class="form-label">タイトル</label>
+                            <input type="text" class="form-control" name="title" id="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="startDate" class="form-label">候補期間開始日</label>
+                            <input type="date" class="form-control" name="startDate" id="startDate" required>
+                        </div>
+                        <div>
+                            <label for="endDate" class="form-label">候補期間終了日</label>
+                            <input type="date" class="form-control" name="endDate" id="endDate" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                        <button type="submit" class="btn btn-primary">登録する</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-    <h1>イベントを管理</h1>
-    <ul>
-        <% for(let event of events) { %>
-            <li><a href="/events/<%= event._id %>"><h2>タイトル:<%= event.title %> </h2><p>候補日:<%= event.startDate.toLocaleDateString() %>〜<%= event.endDate.toLocaleDateString() %></p></a></li>
-        <% } %>
-    </ul>
-</body>
-</html>
+    <div class="container text-center">
+        <div>
+            <h1>イベントに参加</h1>
+            <div class="d-grid">
+                <button class="btn btn-primary btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#joinEventModal">イベントに参加</button>
+            </div>
+        </div> 
+    </div>
+    <div class="modal fade" id="joinEventModal" tabindex="-1" aria-labelledby="joinEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="/events/join" method="POST">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="joinEventModalLabel">イベントへ参加</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="eventCode" class="form-label">招待コード</label>
+                            <input type="text" class="form-control" name="eventCode" id="eventCode" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+                        <button type="submit" class="btn btn-primary">参加する</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+    
+    
+    <div class="container">
+        <h1 class="text-center">イベントを管理</h1>
+        <div class="row">
+          <% for(let event of events) { %>
+            <div class="col-md-6 mb-4">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column text-center">
+                  <h2 class="card-title"><%= event.title %></h2>
+                  <p class="card-text text-muted">
+                    候補日: <%= event.startDate.toLocaleDateString() %>〜<%= event.endDate.toLocaleDateString() %>
+                  </p>
+                  <a href="/events/<%= event._id %>" class="btn btn-primary mt-auto">詳細を見る</a>
+                </div>
+              </div>
+            </div>
+          <% } %>
+        </div>
+    </div>
+      

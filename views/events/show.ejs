@@ -1,34 +1,78 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>イベント詳細</title>
-</head>
-<body>
-    <h1><%= event.title %></h1>
-    <h2>候補日期間: <%= event.startDate.toLocaleDateString() %>〜<%= event.endDate.toLocaleDateString() %></h2>
-    <section>
-        <h3>イベントの更新</h3>
-        <div>
-            <form action="/events/<%= event._id %>?_method=PUT" method="post">
-                <div>
-                    <label for="title">タイトル</label>
-                    <input type="text" name="event[title]" id="title" value="<%= event.title %>">
-                </div>
-                <div>
-                    <label for="startDate">候補期間開始日</label>
-                    <input type="date" name="event[startDate]" id="startDate" value="<%= event.startDate.toISOString().split('T')[0] %>">
-                    <label for="endDate">候補期間終了日</label>
-                    <input type="date" name="event[endDate]" id="endDate" value="<%= event.endDate.toISOString().split('T')[0] %>">
-                </div>
-                <button type="submit">更新する</button>
+<% layout("layout/boilerplate") %>
+
+
+    <div class="container">
+        <!-- イベント情報 -->
+        <div class="card shadow-sm h-100 mb-4">
+            <div class="card-body">
+                <h1>
+                    <%= event.title %>
+                </h1>
+                <h2>候補日期間: <%= event.startDate.toLocaleDateString() %>〜<%= event.endDate.toLocaleDateString() %>
+                </h2>
+            </div>
+            <div class="card-body">
+                <h3>招待コード</h3>
+                <p>このコードを使って、イベントに参加できます</p>
+                    <code><%= event.eventCode %></code>
+            </div>
+            <div class="card-body">
+                <h2>参加者一覧 (<%= event.members.length %>人)</h2>
+                <ul>
+                    <% event.members.forEach(member=> { %>
+                        <li>
+                            <%= member.name.username %>
+                        </li>
+                        <% }) %>
+                </ul>
+                <%# もし参加者がいない場合 %>
+                    <% if (event.members.length===0) { %>
+                        <p>まだ参加者はいません。</p>
+                        <% } %>
+            </div>
+        </div>
+
+        <!-- 可能日設定ボタン -->
+        <div class="management-actions">
+            <a href="/events/<%= event._id %>/selectDate" class="btn btn-primary">可能日の設定をする</a>
+        </div>
+
+        <!-- 候補日分析結果 -->
+        <div class="results-container">
+            <h2>候補日</h2>
+            <!-- 全員可能な候補日 -->
+            <div class="match-section">
+                <h3>🎉全員OK!</h3>
+                <ul>
+                    <% for(let day of perfectMatchDays) { %>
+                        <li>
+                            <%= day.toLocaleDateString('ja-JP', { month: 'long' , day: 'numeric' , weekday: 'short' })
+                                %>
+                        </li>
+                        <% } %>
+                </ul>
+            </div>
+            <!-- あと一人の候補日 -->
+            <div class="match-section">
+                <h3>🤔あと一人!</h3>
+                <ul class="semi-match-card">
+                    <% for(let day of semiMatchDays) { %>
+                        <li>
+                            <%= day.toLocaleDateString('ja-JP', { month: 'long' , day: 'numeric' , weekday: 'short' })%>
+                        </li>
+                        <% } %>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 削除フォームと戻るボタン -->
+        <div class="bottom-actions">
+            <form action="/events/<%= event._id %>?_method=DELETE" method="post">
+                <button type="submit" class="btn btn-danger">イベントを削除する</button>
             </form>
-        </div> 
-    </section>
-    <form action="/events/<%= event._id %>?_method=delete" method="post">
-        <button type="submit">イベントを削除する</button>
-    </form>
-    <a href="/events">戻る</a>
-</body>
-</html>
+            <a href="/events" class="btn btn-secondary">戻る</a>
+        </div>
+
+
+
+    </div>

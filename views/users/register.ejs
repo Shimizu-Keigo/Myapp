@@ -1,0 +1,21 @@
+<% layout("layout/boilerplate") %>
+<h1>ユーザー登録</h1>
+<a href="/login" class="logbtn btn btn-secondary">ログインの場合</a>
+<form action="/register" method="POST" class="validated-form" novalidate>
+    <div class="modal-body">
+        <div class="mb-3">
+            <label for="username" class="form-label">ユーザー名</label>
+            <input type="text" class="form-control" name="username" id="username" required>
+            <div class="valid-feedback">
+                OK!
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">パスワード</label>
+            <input type="text" class="form-control" name="password" id="password" required>
+            <div class="valid-feedback">
+                OK!
+            </div>
+        </div>
+        <button class="btn btn-primary">登録</button>
+</form>
