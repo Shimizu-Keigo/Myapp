@@ -18,7 +18,7 @@ const eventSchema = new mongoose.Schema({
     },
     eventCode: {
         type: String,
-        unipue: true
+        unique: true
     },
     author: {
         type: Schema.Types.ObjectId,
