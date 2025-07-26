@@ -6,7 +6,6 @@ const {isLoggedIn} = require("../middleware");
 
 router.get("/", isLoggedIn, async (req, res) => {  //イベントの作成、一覧の表示ページ
     const user = await User.findById(req.user._id).populate('events'); //各ユーザーに保存されているイベント
-    console.log("EJSに渡されるデータ:", JSON.stringify(user.events, null, 2));
     res.render("events/index", { events: user.events }); 
 });
 
@@ -14,7 +13,7 @@ router.get("/:id", isLoggedIn,  async (req, res) => {  //イベントの詳細�
     const event = await Event.findById(req.params.id).populate({
         path: 'members',
         populate: {
-            path: 'user', // members配列の中の "name" フィールドを対象にする
+            path: 'user', // members配列の中の "user" フィールドを対象にする
             model: 'User'  // Userモデルから情報を取得
         }
     });
@@ -74,23 +73,18 @@ router.post('/join', async (req, res) => {  //イベントへの参加
         }
 
         //  ユーザーが既にそのイベントに参加済みかチェック
-        const isAlreadyParticipant = event.members.some(p => p.name.equals(currentUser._id));
+        const isAlreadyParticipant = event.members.some(p => p.user.equals(currentUser._id));
         if (isAlreadyParticipant) {
             req.flash('info', 'あなたは既にこのイベントに参加しています。');
             return res.redirect(`/events/${event._id}`);
         }
 
         //  イベントに参加させる処理
-        //    - Eventモデルのmembers配列にユーザーを追加
-        event.members.push({ name: currentUser._id, availableDates: [] });
-        //    - Userモデルのevents配列にイベントIDを追加
+        event.members.push({ user: currentUser._id, availableDates: [] });
         currentUser.events.push(event._id);
-
-        //  両方のモデルの変更をデータベースに保存
         await event.save();
         await currentUser.save();
 
-        //  参加したイベントの詳細ページにリダイレクト
         req.flash('success', `${event.title}に参加しました！`);
         res.redirect(`/events/${event._id}`);
 
@@ -110,12 +104,12 @@ router.get("/:id/selectDate", isLoggedIn,  async (req, res) => {//可能日の�
 
 router.patch("/:id", isLoggedIn, async (req, res) => { //可能日の設定
     const { id } = req.params;
-    const { name, availableDates } = req.body;
+    const { availableDates } = req.body;
     const userId = req.user._id; 
 
     const event = await Event.findById(id);
     const existingMember = event.members.find(member =>
-        member.name.equals(userId)
+        member.user.equals(userId)
     );
     if (existingMember) {
         // 既存のユーザーなら availableDates を更新
