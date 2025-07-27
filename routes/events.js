@@ -127,7 +127,17 @@ router.patch("/:id", isLoggedIn, async (req, res) => { //可能日の設定
 
 router.delete("/:id", isLoggedIn,  async (req, res) => {
     const { id } = req.params;
-    const event = await Event.findByIdAndDelete(id);
+    const event = await Event.findById(id);
+    if (event.members && event.members.length > 0) {
+        const memberIds = event.members.map(member => member.user);
+        await User.updateMany(
+            { _id: { $in: memberIds } },
+            { $pull: { events: id } }
+        );
+    }
+
+    await Event.findByIdAndDelete(id);
+    req.flash('success', 'イベントを削除しました。');
     res.redirect(`/events`);
 });
 
