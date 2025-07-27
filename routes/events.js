@@ -113,7 +113,11 @@ router.patch("/:id", isLoggedIn, async (req, res) => { //可能日の設定
     );
     if (existingMember) {
         // 既存のユーザーなら availableDates を更新
-        existingMember.availableDates = Array.isArray(availableDates) ? availableDates : [availableDates];
+        if(availableDates) {
+            existingMember.availableDates = Array.isArray(availableDates) ? availableDates : [availableDates];
+        } else {
+            existingMember.availabileDates = [];
+        }
     } else {
         req.flash("error", "あなたはこのイベントのメンバーではありません。");
     }
