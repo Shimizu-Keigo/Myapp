@@ -116,6 +116,8 @@ router.post("/", isLoggedIn, async (req, res) => {
     try {
         const placeName = req.body.place;
         const event = new Event(req.body);
+        console.log("受信したフォームデータ (req.body):", req.body);
+
 
         if (placeName) {
             console.log("ジオコーディングを開始します:", placeName); // ← ログ追加
