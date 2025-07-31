@@ -14,7 +14,7 @@
             <div class="card-body">
                 <h3>招待コード</h3>
                 <p>このコードを使って、イベントに参加できます</p>
-                    <code><%= event.eventCode %></code>
+                <code><%= event.eventCode %></code>
             </div>
             <div class="card-body">
                 <h2>参加者一覧 (<%= event.members.length %>人)</h2>
@@ -46,8 +46,8 @@
                 <ul>
                     <% for(let day of perfectMatchDays) { %>
                         <li>
-                            <%= day.toLocaleDateString('ja-JP', { month: 'long' , day: 'numeric' , weekday: 'short' })
-                                %>
+                            <%= day.date.toLocaleDateString('ja-JP', { month: 'long' , day: 'numeric' , weekday: 'short' })%>
+                            <span> (<%= day.weather %> / 最高: <%= day.maxTemp %>℃, 最低: <%= day.minTemp %>℃)</span>
                         </li>
                         <% } %>
                 </ul>
@@ -58,12 +58,49 @@
                 <ul class="semi-match-card">
                     <% for(let day of semiMatchDays) { %>
                         <li>
-                            <%= day.toLocaleDateString('ja-JP', { month: 'long' , day: 'numeric' , weekday: 'short' })%>
+                            <%= day.date.toLocaleDateString('ja-JP', { month: 'long' , day: 'numeric' , weekday: 'short' })%>
+                            <span> (<%= day.weather %> / 最高: <%= day.maxTemp %>℃, 最低: <%= day.minTemp %>℃)</span>
                         </li>
                         <% } %>
                 </ul>
             </div>
         </div>
+
+        <div class="container">
+            <h2>目的地</h2>
+            <% if (event.place.lat && event.place.lon) { %>
+                <p><%= event.place.placeName %></p>
+                <div id="map"></div>
+                <style>
+                    #map {
+                        position: static;
+                        height: 400px;
+                        width: 100%;
+                    }
+                </style>
+                <script>
+                    const eventPlace = <%- JSON.stringify(event.place) %>;
+                    const addressStrings = eventPlace.placeName.split(",");
+                    const key = '7Eu3N8auWE8CJAA6fd2M';
+        
+                    const map = L.map('map').setView([eventPlace.lat, eventPlace.lon], 15);
+        
+                    const mtLayer = L.maptiler.maptilerLayer({
+                        apiKey: key,
+                        style: L.maptiler.MapStyle.STREETS,
+                    }).addTo(map);
+        
+                    L.marker([eventPlace.lat, eventPlace.lon]).addTo(map)
+                        .bindPopup(`<b>${addressStrings[0]}</b>`) // ピンに名前を表示
+                        .openPopup();
+                </script>
+            <% } else if (event.place.placeName) { %>
+                <p><%= event.place.placeName %></p>
+            <% } else { %>
+                <p>目的地が設定されていません</p>
+            <% } %>
+        </div>
+
 
         <!-- 削除フォームと戻るボタン -->
         <div class="bottom-actions">

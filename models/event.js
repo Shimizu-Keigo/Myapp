@@ -24,6 +24,18 @@ const eventSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
+    place: {
+        placeName: {
+            type: String
+        }, 
+        lat : {
+            type: Number
+        }, 
+        lon: {
+            type: Number
+        }
+    },
+
     members: [
         {
             user: {

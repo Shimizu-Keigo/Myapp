@@ -3,56 +3,156 @@ const router = express.Router();
 const Event = require("../models/event");
 const User = require('../models/user');
 const {isLoggedIn} = require("../middleware");
+function translateWeatherCode(code) {
+    if (code === 0) return '快晴';
+    if (code >= 1 && code <= 3) return '晴れ時々曇り';
+    if (code >= 45 && code <= 48) return '霧';
+    if (code >= 51 && code <= 67) return '雨';
+    if (code >= 71 && code <= 77) return '雪';
+    if (code >= 80 && code <= 82) return 'にわか雨';
+    if (code >= 95 && code <= 99) return '雷雨';
+    return '不明';
+};
+
+async function getWeatherForDate(lat, lon, dateStr) {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia/Tokyo&start_date=${dateStr}&end_date=${dateStr}`;
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data && data.daily && data.daily.weathercode) {
+            return {
+                date: data.daily.time[0],
+                weather: translateWeatherCode(data.daily.weathercode[0]),
+                maxTemp: data.daily.temperature_2m_max[0],
+                minTemp: data.daily.temperature_2m_min[0]
+            };
+        }
+        return null;
+    } catch (e) {
+        console.error("天気APIエラー:", e);
+        return null;
+    }
+}
 
 router.get("/", isLoggedIn, async (req, res) => {  //イベントの作成、一覧の表示ページ
     const user = await User.findById(req.user._id).populate('events'); //各ユーザーに保存されているイベント
     res.render("events/index", { events: user.events }); 
 });
 
-router.get("/:id", isLoggedIn,  async (req, res) => {  //イベントの詳細ページ
-    const event = await Event.findById(req.params.id).populate({
-        path: 'members',
-        populate: {
-            path: 'user', // members配列の中の "user" フィールドを対象にする
-            model: 'User'  // Userモデルから情報を取得
-        }
-    });
-    // 全員の可能日を見つける
-    const totalMembers = event.members.length;
-    const availabilityCounts = {};
-    event.members.forEach((member) => {
-        member.availableDates.forEach(date => {
-            const dateStr = date.toISOString().split("T")[0];
-            availabilityCounts[dateStr] = (availabilityCounts[dateStr] || 0) + 1;
+router.get("/:id", isLoggedIn, async (req, res) => {
+    try {
+        const event = await Event.findById(req.params.id).populate({
+            path: 'members',
+            populate: { path: 'user', model: 'User' }
         });
-    });
-    const perfectMatchDays = [];
-    const semiMatchDays = [];
-    for (const dateStr in availabilityCounts) {
-        const count = availabilityCounts[dateStr];
 
-        if (count === totalMembers && totalMembers > 0) {
-            perfectMatchDays.push(new Date(dateStr));
-        } else if (count === totalMembers - 1 && totalMembers > 0) {
-            semiMatchDays.push(new Date(dateStr));
+        if (!event) {
+            req.flash('error', 'イベントが見つかりませんでした。');
+            return res.redirect('/events');
         }
+
+        // 1. 全員の可能日を数える
+        const totalMembers = event.members.length;
+        const availabilityCounts = {};
+        event.members.forEach(member => {
+            member.availableDates.forEach(date => {
+                const dateStr = date.toISOString().split("T")[0];
+                availabilityCounts[dateStr] = (availabilityCounts[dateStr] || 0) + 1;
+            });
+        });
+
+        // 2. 天気を取得する必要がある候補日をリストアップ
+        const datesToFetch = [];
+        for (const dateStr in availabilityCounts) {
+            const count = availabilityCounts[dateStr];
+            if (count >= totalMembers - 1 && totalMembers > 0) {
+                datesToFetch.push(dateStr);
+            }
+        }
+
+        // 3. 候補日全ての天気予報を並行して取得 (Promise.all)
+        let weatherResults = [];
+        if (event.place && event.place.lat && datesToFetch.length > 0) {
+            const weatherPromises = datesToFetch.map(dateStr =>
+                getWeatherForDate(event.place.lat, event.place.lon, dateStr)
+            );
+            weatherResults = await Promise.all(weatherPromises);
+        }
+
+        // 4. 天気データを日付で簡単に検索できるよう、Mapに変換
+        const weatherDataMap = new Map();
+        weatherResults.filter(r => r).forEach(result => {
+            weatherDataMap.set(result.date, result);
+        });
+
+        // 5. 最終的なリストを作成
+        const perfectMatchDays = [];
+        const semiMatchDays = [];
+        for (const dateStr in availabilityCounts) {
+            const count = availabilityCounts[dateStr];
+            const weatherData = weatherDataMap.get(dateStr);
+
+            if (weatherData) {
+                const dayData = {
+                    date: new Date(dateStr),
+                    weather: weatherData.weather,
+                    maxTemp: weatherData.maxTemp,
+                    minTemp: weatherData.minTemp
+                };
+                if (count === totalMembers) {
+                    perfectMatchDays.push(dayData);
+                } else if (count === totalMembers - 1) {
+                    semiMatchDays.push(dayData);
+                }
+            }
+        }
+
+        res.render("events/show", { event, perfectMatchDays, semiMatchDays });
+
+    } catch (e) {
+        console.error("詳細ページエラー:", e);
+        req.flash('error', 'ページの表示中にエラーが発生しました。');
+        res.redirect('/events');
     }
-  
-    res.render("events/show", { event, perfectMatchDays, semiMatchDays });
 });
 
 router.post("/", isLoggedIn, async (req, res) => { //新しいイベントの追加
-    const event = new Event(req.body);
-    event.author = req.user._id;
-    const userId = req.user._id;
-    event.members.push({
-        user: req.user._id,
-        availableDates: [] 
-    });
-    await event.save();
-    await User.findByIdAndUpdate(userId, { $addToSet: { events: event._id } });
-    req.flash("success", "新しいイベントを追加しました。")
-    res.redirect(`/events/${event._id}`);//作成したイベントの詳細ページに飛ぶ
+    try {
+        const placeName = req.body.place;
+        const event = new Event(req.body);
+
+        if(placeName) {
+            const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(placeName)}&format=jsonv2&countrycodes=jp&limit=1`;
+            const geoResponse = await fetch(geoUrl);
+            const geoData = await geoResponse.json();
+            if (geoData.length > 0) {
+                const location = geoData[0];
+                event.place = {
+                    placeName: location.display_name,
+                    lat: location.lat,
+                    lon: location.lon
+                };
+            } else {
+                event.place = { placeName };
+            }
+        } 
+
+        event.author = req.user._id;
+            const userId = req.user._id;
+            event.members.push({
+                user: req.user._id,
+                availableDates: [] 
+            });
+            await event.save();
+            await User.findByIdAndUpdate(userId, { $addToSet: { events: event._id } });
+            req.flash("success", "新しいイベントを追加しました。")
+            res.redirect(`/events/${event._id}`);//作成したイベントの詳細ページに飛ぶ
+    } catch (e) {
+        req.flash("error", "イベント作成中にエラーが起きました");
+        console.error("イベント作成エラー:", e);
+        res.redirect('/events');
+    }
+   
 });
 
 router.post('/join', async (req, res) => {  //イベントへの参加
