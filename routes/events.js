@@ -51,7 +51,6 @@ router.get("/:id", isLoggedIn, async (req, res) => {
             return res.redirect('/events');
         }
 
-        // 1. 全員の可能日を数える
         const totalMembers = event.members.length;
         const availabilityCounts = {};
         event.members.forEach(member => {
@@ -61,7 +60,6 @@ router.get("/:id", isLoggedIn, async (req, res) => {
             });
         });
 
-        // 2. 天気を取得する必要がある候補日をリストアップ
         const datesToFetch = [];
         for (const dateStr in availabilityCounts) {
             const count = availabilityCounts[dateStr];
@@ -70,7 +68,6 @@ router.get("/:id", isLoggedIn, async (req, res) => {
             }
         }
 
-        // 3. 候補日全ての天気予報を並行して取得 (Promise.all)
         let weatherResults = [];
         if (event.place && event.place.lat && datesToFetch.length > 0) {
             const weatherPromises = datesToFetch.map(dateStr =>
@@ -79,7 +76,6 @@ router.get("/:id", isLoggedIn, async (req, res) => {
             weatherResults = await Promise.all(weatherPromises);
         }
 
-        // 4. 天気データを日付で簡単に検索できるよう、Mapに変換
         const weatherDataMap = new Map();
         weatherResults.filter(r => r).forEach(result => {
             weatherDataMap.set(result.date, result);
