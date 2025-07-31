@@ -112,15 +112,25 @@ router.get("/:id", isLoggedIn, async (req, res) => {
     }
 });
 
-router.post("/", isLoggedIn, async (req, res) => { //新しいイベントの追加
+router.post("/", isLoggedIn, async (req, res) => {
     try {
         const placeName = req.body.place;
         const event = new Event(req.body);
 
-        if(placeName) {
+        if (placeName) {
+            console.log("ジオコーディングを開始します:", placeName); // ← ログ追加
             const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(placeName)}&format=jsonv2&countrycodes=jp&limit=1`;
+            
             const geoResponse = await fetch(geoUrl);
+            console.log("APIレスポンスのステータス:", geoResponse.status); // ← ログ追加
+
+            // ステータスがOKでない場合を考慮
+            if (!geoResponse.ok) {
+                throw new Error(`Nominatim APIがエラーステータスを返しました: ${geoResponse.status}`);
+            }
+
             const geoData = await geoResponse.json();
+            console.log("ジオコーディングデータを取得しました。");
             if (geoData.length > 0) {
                 const location = geoData[0];
                 event.place = {
