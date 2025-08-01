@@ -26,9 +26,9 @@
 
 # 使用技術
 
-このアプリケーションは、以下の技術スタックで構築されています。
+このアプリケーションは、以下で構築されています。
 
-* **フロントエンド**: EJS, ejs-mate, Bootstrap 5, **Leaflet.js**
+* **フロントエンド**: EJS, ejs-mate, Bootstrap 5,
 * **バックエンド**: Node.js, Express.js
 * **データベース**: MongoDB, Mongoose
 * **認証**: Passport.js (passport-local, passport-local-mongoose)
