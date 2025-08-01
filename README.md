@@ -8,7 +8,7 @@
 
 デプロイしたアプリケーションはこちらから触ることができます。
 
-**URL**: https://thawing-earth-12068-01dda5e03674.herokuapp.com/
+**URL**: https://myapp-ewpp.onrender.com
 
 # 主な機能
 
@@ -33,7 +33,7 @@
 * **データベース**: MongoDB, Mongoose
 * **認証**: Passport.js (passport-local, passport-local-mongoose)
 * **外部API**: **MapTiler**, **Open-Meteo API**
-* **デプロイ**: Heroku
+* **デプロイ**: Render
 * **その他**: connect-flash, express-session, connect-mongo, method-override, dotenv
 
 # インストールと実行方法
