@@ -42,7 +42,7 @@
 
 1.  **リポジトリをクローンする**
     ```bash
-    git clone [https://github.com/kegokego55/Myapp.git](https://github.com/kegokego55/Myapp.git)
+    git clone [https://github.com/Shimizu-Keigo/Myapp.git](https://github.com/kegokego55/Myapp.git)
     ```
 
 2.  **ディレクトリに移動する**
