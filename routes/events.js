@@ -119,15 +119,11 @@ router.post("/", isLoggedIn, async (req, res) => { //新しいイベントの追
 
         if(placeName) {
             const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(placeName)}&format=jsonv2&countrycodes=jp&limit=1`;
-            
-            const geoResponse = await fetch(geoUrl);
-            console.log("APIレスポンスのステータス:", geoResponse.status); // ← ログ追加
-
-            // ステータスがOKでない場合を考慮
-            if (!geoResponse.ok) {
-                throw new Error(`Nominatim APIがエラーステータスを返しました: ${geoResponse.status}`);
-            }
-
+            const geoResponse = await fetch(geoUrl, {
+                headers: {
+                    'User-Agent': 'BuildEventApp/1.0 (https://github.com/Shimizu-Keigo/Myapp)'
+                }    
+            });
             const geoData = await geoResponse.json();
             if (geoData.length > 0) {
                 const location = geoData[0];
