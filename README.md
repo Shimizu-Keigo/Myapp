@@ -8,7 +8,7 @@
 
 デプロイしたアプリケーションはこちらから触ることができます。
 
-**URL**: https://thawing-earth-12068-01dda5e03674.herokuapp.com/
+**URL**: https://myapp-ewpp.onrender.com
 
 # 主な機能
 
@@ -26,14 +26,14 @@
 
 # 使用技術
 
-このアプリケーションは、以下の技術スタックで構築されています。
+このアプリケーションは、以下で構築されています。
 
-* **フロントエンド**: EJS, ejs-mate, Bootstrap 5, **Leaflet.js**
+* **フロントエンド**: EJS, ejs-mate, Bootstrap 5,
 * **バックエンド**: Node.js, Express.js
 * **データベース**: MongoDB, Mongoose
 * **認証**: Passport.js (passport-local, passport-local-mongoose)
 * **外部API**: **MapTiler**, **Open-Meteo API**
-* **デプロイ**: Heroku
+* **デプロイ**: Render
 * **その他**: connect-flash, express-session, connect-mongo, method-override, dotenv
 
 # インストールと実行方法
@@ -42,7 +42,7 @@
 
 1.  **リポジトリをクローンする**
     ```bash
-    git clone [https://github.com/kegokego55/Myapp.git](https://github.com/kegokego55/Myapp.git)
+    git clone [https://github.com/Shimizu-Keigo/Myapp.git](https://github.com/kegokego55/Myapp.git)
     ```
 
 2.  **ディレクトリに移動する**
