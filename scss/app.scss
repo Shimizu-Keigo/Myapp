@@ -1,0 +1,104 @@
+// --- 変数定義 (カラーパレット) 🎨 ---
+$dark-teal: #082627;
+$cream-white: #F9FCFD;
+$card-bg: #28A6A5;
+$primary-blue: #2a09ff;
+$primary-blue-hover: #19078e;
+$match-section-bg: #fffbe6;
+$match-section-border: #ffe58f;
+$select-date-bg: #d5f8ef;
+
+// --- 基本スタイル ---
+body {
+    background-color: $cream-white;
+    color: $dark-teal;
+    padding-bottom: 10vh; /* フッターの高さ分余白を確保 */
+}
+
+.container {
+    margin: 10% auto;
+}
+
+
+.navbar-custom {
+    background-color: $dark-teal;
+}
+
+.card {
+    background-color: $card-bg;
+    color: $cream-white;
+}
+
+.btn-primary {
+    background-color: $primary-blue;
+    border-color: $primary-blue;
+
+    &:hover {
+        background-color: $primary-blue-hover;
+        border-color: $primary-blue-hover;
+    }
+}
+
+.regbtn,
+.logbtn {
+    margin: 15px auto;
+}
+
+.modal {
+    &-header {
+        h1, h5 {
+            color: $dark-teal;
+        }
+    }
+    &-body {
+        label {
+            color: $dark-teal;
+        }
+    }
+}
+
+.match-section {
+    ul {
+        background-color: $match-section-bg;
+        border: 1px solid $match-section-border;
+        border-radius: .375rem;
+        padding: 1rem;
+        list-style-position: inside;
+        color: $dark-teal;
+    }
+}
+
+.select-date {
+    color: $dark-teal;
+    background-color: $select-date-bg;
+}
+
+
+%action-container-base {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.management-actions {
+    @extend %action-container-base;
+}
+
+.results-container {
+    margin-top: 2rem;
+}
+
+.bottom-actions {
+    @extend %action-container-base;
+}
+
+.my-fixed-footer {
+    display: flex;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 10vh;
+    z-index: 1000;
+}

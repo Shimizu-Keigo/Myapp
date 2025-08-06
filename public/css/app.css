@@ -1,101 +1,77 @@
-.navbar-custom {
-    background-color: #082627;
-    /* cinnamon */
-}
-
+@charset "UTF-8";
 body {
-    background-color: #F9FCFD;
-    /*クリーム色  */
-    padding-bottom: 2rem;
-    /* フッターとの間に余白を確保 */
-    color: #082627;
-    padding-bottom: 10vh;
-}
-
-
-.card {
-    background-color: #28A6A5;
-    color: #F9FCFD;
-}
-
-.btn-primary {
-    background-color: #2a09ff;
-    border-color: #2a09ff;
-}
-
-.btn-primary:hover {
-    border-color: #19078e;
-    background-color: #19078e;
-}
-
-.regbtn {
-    margin: 15px auto;
-}
-
-.logbtn {
-    margin: 15px auto;
-}
-
-.modal-header h1,
-h5 {
-    color: #082627;
-}
-
-.modal-body label {
-    color: #082627;
+  background-color: #F9FCFD;
+  color: #082627;
+  padding-bottom: 10vh; /* フッターの高さ分余白を確保 */
 }
 
 .container {
-    margin: 10% auto;
+  margin: 10% auto;
 }
 
-/* 「あと一人」の日をカード風に見せるスタイル */
+.navbar-custom {
+  background-color: #082627;
+}
+
+.card {
+  background-color: #28A6A5;
+  color: #F9FCFD;
+}
+
+.btn-primary {
+  background-color: #2a09ff;
+  border-color: #2a09ff;
+}
+.btn-primary:hover {
+  background-color: #19078e;
+  border-color: #19078e;
+}
+
+.regbtn,
+.logbtn {
+  margin: 15px auto;
+}
+
+.modal-header h1, .modal-header h5 {
+  color: #082627;
+}
+.modal-body label {
+  color: #082627;
+}
+
 .match-section ul {
-    background-color: #fffbe6;
-    /* 薄い黄色 */
-    border: 1px solid #ffe58f;
-    border-radius: .375rem;
-    padding: 1rem;
-    list-style-position: inside;
-    color: #082627;
+  background-color: #fffbe6;
+  border: 1px solid #ffe58f;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  list-style-position: inside;
+  color: #082627;
 }
 
-/* 各セクション間の余白 */
-.management-actions,
-.results-container,
-.bottom-actions {
-    margin-top: 2rem;
-}
-
-/* ボタンが横に並ぶように調整 */
-.management-actions,
-.bottom-actions {
-    display: flex;
-    gap: 1rem;
-    /* ボタン間の隙間 */
-    align-items: center;
-}
-
-
-/* 可能日選択フォーム */
 .select-date {
-    color: #082627;
-    background-color: #d5f8ef;
+  color: #082627;
+  background-color: #d5f8ef;
+}
+
+.bottom-actions, .management-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.results-container {
+  margin-top: 2rem;
 }
 
 .my-fixed-footer {
-    /* 画面の下に固定する */
-    display: flex;
-    align-items: center;
-    position: fixed;
-    align-items: center;
-    bottom: 0;
-    width: 100%;
-    /* 画面の幅いっぱいに広げる */
-
-    /* 高さを画面の20分の1にする */
-    height: 10vh;
-
-    /* 他の要素より手前に表示するため */
-    z-index: 1000;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 10vh;
+  z-index: 1000;
 }
+
+/*# sourceMappingURL=app.css.map */
